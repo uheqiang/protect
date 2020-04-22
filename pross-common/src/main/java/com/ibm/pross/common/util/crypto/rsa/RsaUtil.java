@@ -9,7 +9,7 @@ public class RsaUtil {
 	/**
 	 * Computes a "raw" (no padding) RSA signature of a message m given private
 	 * exponent d and modulus n
-	 * 
+	 *
 	 * @param m The message
 	 * @param d The private exponent
 	 * @param n The public modulus, which is the product of two primes
@@ -22,8 +22,8 @@ public class RsaUtil {
 	/**
 	 * Verifies a "raw" (no padding) RSA signature s given public exponent e and
 	 * modulus n
-	 * 
-	 * @param m The message
+	 *
+	 * @param s The message
 	 * @param e The public exponent
 	 * @param n The public modulus, which is the product of two primes
 	 * @return The decrypted signature m of signature s computed with public key (e,

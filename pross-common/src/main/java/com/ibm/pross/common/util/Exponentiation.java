@@ -27,15 +27,15 @@ public class Exponentiation {
 	/**
 	 * If available, this method uses the GMP library to perform a secure modular
 	 * exponentiation.
-	 * 
+	 *
 	 * Otherwise it falls back to Java's BigInteger implementation which is not
 	 * secure against timing attacks. (This can leak the exponent unless blinding
 	 * methods are employed)
-	 * 
+	 *
 	 * @param base
 	 * @param exponent
 	 * @param modulus
-	 * 
+	 *
 	 * @return (base ^ exponent) % modulus
 	 */
 	protected static BigInteger modPowSecure(final BigInteger base, final BigInteger exponent,
@@ -53,7 +53,7 @@ public class Exponentiation {
 	/**
 	 * Performs an exponentiation in a way that prevents side-channel attacks. Note
 	 * that this method takes about twice the time to compute.
-	 * 
+	 *
 	 * @param base
 	 * @param exponent
 	 * @param modulus
@@ -62,7 +62,7 @@ public class Exponentiation {
 	protected static BigInteger modPowerSecureJava(final BigInteger base, final BigInteger exponent,
 			final BigInteger modulus) {
 		throw new RuntimeException("Not yet implemented");
-//		
+//
 //		// Generate blinding factor to obfsucate the exponent
 //		final BigInteger mMinusOne = modulus.subtract(BigInteger.ONE);
 //		final BigInteger x = RandomNumberGenerator.generateRandomCoprimeInRange(modulus);
@@ -82,16 +82,16 @@ public class Exponentiation {
 
 	/**
 	 * If available, uses the GMP library to perform a modular exponentiation.
-	 * 
+	 *
 	 * Note that this implementation is not secure against timing attacks. If
 	 * security of the exponent is required use modPowSecure.
-	 * 
+	 *
 	 * @param base
 	 * @param exponent
 	 * @param modulus
-	 * 
+	 *
 	 * @return (base ^ exponent) % modulus
-	 * 
+	 *
 	 * @see modPowSecure
 	 */
 	public static BigInteger modPow(BigInteger base, BigInteger exponent, BigInteger modulus) {
@@ -114,10 +114,10 @@ public class Exponentiation {
 	 * Computes the modular multiplicitive inverse of a number
 	 *
 	 * @param a The number to compute the inverse of
-	 * @param b The modulus
-	 * 
+	 * @param modulus The modulus
+	 *
 	 * @return the inverse of a modulo b
-	 * 
+	 *
 	 * @throws ArithmeticException if there is no inverse
 	 */
 	public static BigInteger modInverse(final BigInteger a, final BigInteger modulus) throws ArithmeticException {

@@ -44,7 +44,8 @@ public class RsaSignatureClient {
 		this.threshold = threshold;
 	}
 
-	public BigInteger recoverSignature(final String keyName, final byte[] toBeSigned) throws BelowThresholdException, BadArgumentException, SecretRecoveryException, NoSuchAlgorithmException {
+	public BigInteger recoverSignature(final String keyName, final byte[] toBeSigned) throws BelowThresholdException,
+            BadArgumentException, SecretRecoveryException, NoSuchAlgorithmException {
 
 		// Use a quorum to establish the consistent configuration across servers
 		final ServerPublicConfiguration mostCommonConfig = RsaSignatureClient.getConsistentConfiguration(keyName, this.servers,
@@ -104,7 +105,7 @@ public class RsaSignatureClient {
 
 		// Combine shares
 		System.out.print("  Recovering signature from shares...");
-		// 到此处
+
 		BigInteger blindedSignature = ThresholdSignatures.recoverSignature(blindedToBeSigned, validatedSignatureTriplets,
 				mostCommonConfig);
 		System.out.println(" done.");
@@ -125,6 +126,90 @@ public class RsaSignatureClient {
 
 		return signatureOfPassword;
 	}
+
+    public boolean thresholdSignaturesAndVerify(final String keyName, final byte[] toBeSigned) throws BelowThresholdException,
+            BadArgumentException, NoSuchAlgorithmException {
+
+        // Use a quorum to establish the consistent configuration across servers
+        final ServerPublicConfiguration mostCommonConfig = RsaSignatureClient.getConsistentConfiguration(keyName, this.servers,
+                this.threshold);
+
+        // Generate blinded version of the password
+        System.out.print("  Computing a blinded password...");
+        BigInteger n = mostCommonConfig.getN();
+        BigInteger e = mostCommonConfig.getE();
+        BigInteger r = RandomNumberGenerator.generateRandomInteger(n);
+        BigInteger b = r.modPow(e, n);
+
+        // Process to message to be signed by hashing
+        final byte[] hashed = MessageDigest.getInstance(CommonConfiguration.HASH_ALGORITHM).digest(toBeSigned);
+        BigInteger numToBeSigned = (new BigInteger(1, hashed)).mod(n);
+
+        // Blind the input to be signed
+        BigInteger blindedToBeSigned = numToBeSigned.multiply(b).mod(n);
+        System.out.println(" done.");
+
+        // Send signing request to the servers
+        System.out.print("  Requesting signature shares of blinded password...");
+        Set<SignatureResponse> signatureTriplets = new HashSet<>();
+        int serverIndex = 0;
+        for (RsaSignatureServer server : servers) {
+            serverIndex++;
+            try {
+                signatureTriplets.add(server.computeSignatureShare(keyName, blindedToBeSigned));
+            } catch (BadArgumentException | UserNotFoundException e1) {
+                System.out.print("Failed to get result from server[" + serverIndex + "], error = " + e1.getMessage());
+            }
+        }
+        System.out.println("done. Collected " + signatureTriplets.size() + " unique signature shares");
+
+        System.out.println("Verifying signature shares...");
+
+        // Validate each share and remove it if it doesn't pass verification
+        List<SignatureResponse> validatedSignatureTriplets = new ArrayList<>();
+        for (SignatureResponse signatureTriplet : signatureTriplets) {
+            BigInteger index = signatureTriplet.getServerIndex();
+            try {
+                if (ThresholdSignatures.validateSignatureResponse(blindedToBeSigned, signatureTriplet, mostCommonConfig)) {
+                    validatedSignatureTriplets.add(signatureTriplet);
+                } else {
+                    System.out.println("Signture share at index " + index + " failed validation, excluding from operation");
+                }
+            } catch (BadArgumentException e1) {
+                System.out.println("Signture share at index " + index + " failed validation, excluding from operation, error = " + e1.getMessage());
+            }
+        }
+
+        System.out.println("Recovered " + validatedSignatureTriplets.size() + " verified signature shares");
+
+        if (validatedSignatureTriplets.size() < this.threshold) {
+            throw new BelowThresholdException("Insufficient valid signature shares to recover (below threshold)");
+        }
+
+        // Combine shares
+        System.out.print("  Recovering signature from shares...");
+
+        BigInteger blindedSignature = ThresholdSignatures.recoverSignature(blindedToBeSigned, validatedSignatureTriplets,
+                mostCommonConfig);
+        System.out.println(" done.");
+
+        // Verify signature is correct for what was passed
+        System.out.print("  Verifying signature...");
+        BigInteger signed = RsaUtil.rsaVerify(blindedSignature, e, n);
+        return signed.equals(blindedToBeSigned);
+        /*if (!signed.equals(blindedToBeSigned)) {
+            throw new SecretRecoveryException("Signature was improperly computed");
+        }
+        System.out.println(" done.");
+
+        // Unblind the signature
+        System.out.print("  Unblinding signature...");
+        BigInteger unblindingFactor = Exponentiation.modInverse(r, n);
+        BigInteger signatureOfPassword = blindedSignature.multiply(unblindingFactor).mod(n);
+        System.out.println(" done.");
+
+        return signatureOfPassword;*/
+    }
 
 	public static ServerPublicConfiguration getConsistentConfiguration(final String username, final RsaSignatureServer[] servers,
 			int threshold) throws BelowThresholdException {
