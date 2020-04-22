@@ -20,13 +20,14 @@
 		<url>https://github.com/jasonkresch/pross/issues</url>
 	</issueManagement>
 
-	
+
 	<modules>
 		<module>pross-common</module>
 		<module>pross-client</module>
 		<module>pross-server</module>
 		<module>bft-smart</module>
-	</modules>
+        <module>pross-thresholdSignature</module>
+    </modules>
 
 
 	<properties>

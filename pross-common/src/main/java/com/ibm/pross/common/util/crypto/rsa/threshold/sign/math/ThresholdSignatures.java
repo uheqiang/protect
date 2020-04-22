@@ -22,7 +22,7 @@ import com.ibm.pross.common.util.shamir.ShamirShare;
  * Implements functions of "Practical Threshold Signatures" which includes: -
  * Generating signature shares and proofs of correctness - Verifying signature
  * shares with their proofs - Combining signature shares to recover a signature
- * 
+ *
  * @see http://www.iacr.org/archive/eurocrypt2000/1807/18070209-new.pdf
  */
 public class ThresholdSignatures {
@@ -37,7 +37,7 @@ public class ThresholdSignatures {
 	/**
 	 * Produce a Signature Share and a proof of its correctness (contained in a
 	 * SignatureShareProof object). This requires the server private information.
-	 * 
+	 *
 	 * @param inputMessage
 	 * @param serverConfig
 	 * @return
@@ -52,9 +52,12 @@ public class ThresholdSignatures {
 		// Compute signature share
 		final BigInteger n = publicConfig.getN();
 		final int serverCount = publicConfig.getServerCount();
+		// delta = serverCount! = serverCount * (serverCount - 1) * (serverCount - 2) * ...* 2 * 1
 		final BigInteger delta = Polynomials.factorial(BigInteger.valueOf(serverCount));
 		final BigInteger secretShare = share.getY();
+		// 2 * delta * secretShare
 		final BigInteger exponent = TWO.multiply(delta).multiply(secretShare);
+		// inputMessage^exponent mod n
 		final BigInteger signatureShare = Exponentiation.modPow(inputMessage, exponent, n);
 
 		// Compute verification proof
@@ -78,7 +81,7 @@ public class ThresholdSignatures {
 	/**
 	 * Validate a SignatureTriplet is consistent with public verification keys and
 	 * the input message
-	 * 
+	 *
 	 * @param inputMessage
 	 * @param signatureResponse
 	 * @param configuration
@@ -144,7 +147,7 @@ public class ThresholdSignatures {
 	/**
 	 * Combine a threshold number of signature shares to recover the signature of
 	 * the inputMessage
-	 * 
+	 *
 	 * @param inputMessage       The message to be signed
 	 * @param signatureResponses A list of signature responses from different
 	 *                           servers for the same input message
@@ -210,7 +213,7 @@ public class ThresholdSignatures {
 
 		/**
 		 * Represents gcd(a, b)
-		 * 
+		 *
 		 * @return
 		 */
 		public BigInteger getG() {
@@ -219,7 +222,7 @@ public class ThresholdSignatures {
 
 		/**
 		 * Represents the co-efficient of b in the identity: ax + by = gcd(a, b)
-		 * 
+		 *
 		 * @return
 		 */
 		public BigInteger getY() {
@@ -228,7 +231,7 @@ public class ThresholdSignatures {
 
 		/**
 		 * Represents the co-efficient of b in the identity: ax + by = gcd(a, b)
-		 * 
+		 *
 		 * @return
 		 */
 		public BigInteger getX() {
@@ -241,7 +244,7 @@ public class ThresholdSignatures {
 	 * Returns a triplet representing the greatest common divisor between a and b
 	 * (g), as well as the coefficients x and y that satisfy Bézout's identity: ax +
 	 * by = gcd(a, b)
-	 * 
+	 *
 	 * @param a
 	 * @param b
 	 * @return (g, x, y)

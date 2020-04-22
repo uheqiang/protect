@@ -15,7 +15,7 @@ import com.ibm.pross.common.util.shamir.ShamirShare;
  * (Initialized via a dealer). The dealer establishes secret information which
  * can only be recovered through the interaction with a threshold number of
  * well-behaved servers.
- * 
+ *
  * The servers, however, learn nothing of this secret and only a threshold
  * number of compromised servers may collude to defeat the confidentiality of
  * the secret.
@@ -37,10 +37,10 @@ public class RsaSignatureServer {
 	/**
 	 * Registers public and private configuration data under this username. Returns
 	 * true if this username was not known.
-	 * 
+	 *
 	 * @param username
-	 * @param configuration
-	 * @param shamirShare
+	 * @param publicConfig
+	 * @param share
 	 * @return
 	 * @throws BadArgumentException
 	 */
@@ -55,7 +55,7 @@ public class RsaSignatureServer {
 
 	/**
 	 * Common method used to load server configuration
-	 * 
+	 *
 	 * @param username
 	 * @return ServerConfiguration registered for the user
 	 * @throws UserNotFoundException If there is no registered server configuration
@@ -72,7 +72,7 @@ public class RsaSignatureServer {
 	/**
 	 * Returns the unique "index" of this server for the provided username, where
 	 * the index is defined as the x-coordinate for the share held by this server
-	 * 
+	 *
 	 * @param username
 	 * @return
 	 * @throws UserNotFoundException
@@ -85,7 +85,7 @@ public class RsaSignatureServer {
 	/**
 	 * Returns the set of configuration that is common and public to all servers for
 	 * this user
-	 * 
+	 *
 	 * @param username
 	 * @return
 	 * @throws Exception
@@ -99,7 +99,7 @@ public class RsaSignatureServer {
 	 * Generates a signature share along with a proof of correctness for the given
 	 * message to be signed. A threshold of such signature shares can be combined to
 	 * yield the signature.
-	 * 
+	 *
 	 * @param message
 	 * @return
 	 * @throws UserNotFoundException
@@ -122,7 +122,7 @@ public class RsaSignatureServer {
 
 	/**
 	 * Generate empty set of servers
-	 * 
+	 *
 	 * @param serverCount
 	 * @return
 	 */
@@ -136,9 +136,9 @@ public class RsaSignatureServer {
 
 	/**
 	 * Executes some sanity checks on the server configuration
-	 * 
+	 *
 	 * @param publicConf
-	 * @param privateConf
+	 * @param share
 	 * @throws BadArgumentException
 	 */
 	public static void checkConfigurationConsistency(final ServerPublicConfiguration publicConf, ShamirShare share)

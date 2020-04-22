@@ -21,7 +21,7 @@ import com.ibm.pross.common.util.crypto.rsa.threshold.sign.server.RsaSignatureSe
 
 /**
  * Runnable class that exhibits functionality of the protocol.
- * 
+ *
  * This prototype is based on: "Practical Threshold Signatures" by Victor Shoup
  * http://www.iacr.org/archive/eurocrypt2000/1807/18070209-new.pdf
  */
@@ -47,10 +47,10 @@ public class Driver {
 
 		System.out.println("Registration complete!");
 		System.out.println();
-		
+		// non-threshold signing
 		System.out.println("Signature     = " + Arrays.toString(testSignature));
 		System.out.println("Signature Int = " + new BigInteger(1, testSignature));
-		
+
 		System.out.println();
 		System.out.println("Recovering secret from the servers...");
 
@@ -69,7 +69,7 @@ public class Driver {
 		} else {
 			System.err.println("Signature mismatch!");
 		}
-		
+
 		System.out.println("Done.");
 	}
 

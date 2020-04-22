@@ -33,7 +33,7 @@ import com.ibm.pross.common.util.shamir.ShamirShare;
  * Initializes a set of N servers such that future recovery of a secret is
  * possible through an interaction with at least a threshold number of
  * well-behaved servers together with knowledge of a password.
- * 
+ *
  * The password is neither stored, nor known by any other entity in the system,
  * and is only subject to the possibility of brute-force attack after a
  * threshold number of servers are compromised without an intervening "security
@@ -58,16 +58,16 @@ public class RsaDealingClient {
 	 * common configuration. The "registration threshold" is all n servers, and this
 	 * method call will fail with a BelowThresholdException if registration does not
 	 * succeed across the entire set of servers.
-	 * 
+	 *
 	 * @param username
 	 * @throws BadArgumentException
 	 * @throws BelowThresholdException
-	 * @throws NoSuchAlgorithmException 
-	 * @throws InvalidKeySpecException 
-	 * @throws InvalidKeyException 
-	 * @throws NoSuchPaddingException 
-	 * @throws BadPaddingException 
-	 * @throws IllegalBlockSizeException 
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
+	 * @throws InvalidKeyException
+	 * @throws NoSuchPaddingException
+	 * @throws BadPaddingException
+	 * @throws IllegalBlockSizeException
 	 */
 	public byte[] registerWithServers(final String username, final byte[] toBeSigned)
 			throws BadArgumentException, BelowThresholdException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
@@ -96,6 +96,7 @@ public class RsaDealingClient {
 
 		// Create standard RSA Public key pair
 		System.out.print("  Creating RSA keypair...");
+		// public key (e,n)
 		final RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(n, e);
 		final KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		final RSAPublicKey publicKey = (RSAPublicKey) keyFactory.generatePublic(publicKeySpec);
@@ -103,10 +104,11 @@ public class RsaDealingClient {
 		// Create standard RSA Private key
 		final BigInteger totient = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
 		final BigInteger realD = Exponentiation.modInverse(e, totient);
+		// private key(realD,n), here realD = e^(-1) mod (p-1)(q-1)
 		final RSAPrivateKeySpec privateKeySpec = new RSAPrivateKeySpec(n, realD);
 		final RSAPrivateKey privateKey = (RSAPrivateKey) keyFactory.generatePrivate(privateKeySpec);
 		System.out.println(" done.");
-		
+
 		// Create signature using normal (non-threshold) signing
 		System.out.print("  Generating signature...");
 		final KeyPair keyPair = new KeyPair(publicKey, privateKey);
@@ -119,6 +121,7 @@ public class RsaDealingClient {
 
 		// Create secret shares of "d"
 		System.out.print("  Generating secret shares...");
+		// e*d mod m == 1，模乘法逆元的关系。
 		final BigInteger d = Exponentiation.modInverse(e, m);// ModularArithmetic.modInverse(e, m);
 
 		// Generate random polynomial coefficients for secret sharing of d
@@ -139,7 +142,9 @@ public class RsaDealingClient {
 		System.out.print("  Creating public and private verification keys...");
 
 		// Generate public verification key v as a random square modulo n
+        // sqrtV < n
 		final BigInteger sqrtV = RandomNumberGenerator.generateRandomInteger(n);
+		// v = sqrtV^2 mod n
 		final BigInteger v = sqrtV.modPow(ThresholdSignatures.TWO, n);
 
 		// Generate private verification keys as v^share mod n
@@ -162,7 +167,7 @@ public class RsaDealingClient {
 			}
 		}
 		System.out.println(" done.");
-		
+
 		return signature;
 	}
 

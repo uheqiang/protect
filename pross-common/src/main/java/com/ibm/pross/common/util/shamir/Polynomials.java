@@ -29,10 +29,10 @@ public class Polynomials {
 	 * Evaluates a polynomial defined by the coefficients list (assumed to be in
 	 * order from x^0 to x^n-1) at the given coordinate x. All computations are
 	 * performed mod m.
-	 * 
+	 *
 	 * @param coefficients
 	 * @param x
-	 * @param modulus
+	 * @param m
 	 * @return A point representing the evaluation of the polynomial F at F(x).
 	 */
 	public static ShamirShare evaluatePolynomial(final BigInteger[] coefficients, final BigInteger x,
@@ -52,7 +52,7 @@ public class Polynomials {
 	 * determine a multiplier to use when solving for another x-coordinate at
 	 * position "i" using an x-coordinate position at "j". This can be used as a
 	 * step in partial rebuilding.
-	 * 
+	 *
 	 * @param points The x-coordinates of the values being used in this
 	 *               interpolation
 	 * @param i      The x-coordinate which we are considering solving for
@@ -117,10 +117,10 @@ public class Polynomials {
 	/**
 	 * Uses matrix inversion to recover the polynomial coefficients from at least a
 	 * threshold number of shares
-	 * 
+	 *
 	 * @param shares
 	 * @param threshold
-	 * 
+	 *
 	 * @return An array of BigIntegers representing the coefficients of the
 	 *         polynomial that produced the shares
 	 */
@@ -149,7 +149,7 @@ public class Polynomials {
 	 * Combines a threshold number of derivation results computed from individual
 	 * shares to recover the derived result based on the secret represent by those
 	 * shares
-	 * 
+	 *
 	 * @param responses A response computed using one of the shares
 	 * @param threshold The recovery threshold for the secret sharing
 	 * @return The EcPoint which is equal to the point derived from multiplying the
@@ -195,10 +195,10 @@ public class Polynomials {
 	/**
 	 * Uses matrix inversion to recover the Feldman coefficients from at least a
 	 * threshold number of share results
-	 * 
+	 *
 	 * @param shares
 	 * @param threshold
-	 * 
+	 *
 	 * @return An array of EcPoints representing the Feldman coefficients g^ai of
 	 *         the polynomial that produced the share results g^si
 	 */
@@ -226,7 +226,7 @@ public class Polynomials {
 
 	/**
 	 * Computes n!
-	 * 
+	 *
 	 * @param n
 	 * @return
 	 */
@@ -240,14 +240,14 @@ public class Polynomials {
 
 		return result;
 	}
-	
+
 
 	/**
 	 * Uses Lagrange polynomial interpolation of the provided x-coordinates to
 	 * determine a multiplier to use when solving for another x-coordinate at
 	 * position "i" using an x-coordinate position at "j". This can be used as a
 	 * step in partial rebuilding.
-	 * 
+	 *
 	 * @param points
 	 *            The x-coordinates of the values being used in this
 	 *            interpolation
@@ -263,7 +263,7 @@ public class Polynomials {
 	 * @param m
 	 * @return Lambda_ij which when multiplied by the y-coordinate at j, will be
 	 *         a "partial" slice, which can be summed with others to yield F(i)
-	 * @throws BadArgumentException 
+	 * @throws BadArgumentException
 	 * @throws Exception
 	 *             When the numerator is not evenly divisible by the denominator
 	 */

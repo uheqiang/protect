@@ -27,7 +27,7 @@ import com.ibm.pross.common.util.crypto.rsa.threshold.sign.server.ServerPublicCo
 /**
  * Recovers an RSA signature via interaction with at least a threshold number of
  * well-behaved servers.
- * 
+ *
  * Improperly behaving servers are detected through a verification process and
  * are excluded from the operation. This recovery operation can be used to
  * reliably store small amounts of data that is highly sensitive and highly
@@ -56,11 +56,11 @@ public class RsaSignatureClient {
 		BigInteger e = mostCommonConfig.getE();
 		BigInteger r = RandomNumberGenerator.generateRandomInteger(n);
 		BigInteger b = r.modPow(e, n);
-		
+
 		// Process to message to be signed by hashing
 		final byte[] hashed = MessageDigest.getInstance(CommonConfiguration.HASH_ALGORITHM).digest(toBeSigned);
 		BigInteger numToBeSigned = (new BigInteger(1, hashed)).mod(n);
-		
+
 		// Blind the input to be signed
 		BigInteger blindedToBeSigned = numToBeSigned.multiply(b).mod(n);
 		System.out.println(" done.");
@@ -74,34 +74,29 @@ public class RsaSignatureClient {
 			try {
 				signatureTriplets.add(server.computeSignatureShare(keyName, blindedToBeSigned));
 			} catch (BadArgumentException | UserNotFoundException e1) {
-				System.out
-						.print("    Failed to get result from server[" + serverIndex + "], error = " + e1.getMessage());
+				System.out.print("Failed to get result from server[" + serverIndex + "], error = " + e1.getMessage());
 			}
 		}
-		System.out.println(" done. Collected " + signatureTriplets.size() + " unique signature shares");
+		System.out.println("done. Collected " + signatureTriplets.size() + " unique signature shares");
 
-		System.out.println("  Verifying signature shares...");
-		
+		System.out.println("Verifying signature shares...");
+
 		// Validate each share and remove it if it doesn't pass verification
 		List<SignatureResponse> validatedSignatureTriplets = new ArrayList<>();
 		for (SignatureResponse signatureTriplet : signatureTriplets) {
-
 			BigInteger index = signatureTriplet.getServerIndex();
-
 			try {
 				if (ThresholdSignatures.validateSignatureResponse(blindedToBeSigned, signatureTriplet, mostCommonConfig)) {
 					validatedSignatureTriplets.add(signatureTriplet);
 				} else {
-					System.out.println(
-							"    Signture share at index " + index + " failed validation, excluding from operation");
+					System.out.println("Signture share at index " + index + " failed validation, excluding from operation");
 				}
 			} catch (BadArgumentException e1) {
-				System.out.println(
-						"    Signture share at index " + index + " failed validation, excluding from operation, error = " + e1.getMessage());
+				System.out.println("Signture share at index " + index + " failed validation, excluding from operation, error = " + e1.getMessage());
 			}
 		}
 
-		System.out.println("  Recovered " + validatedSignatureTriplets.size() + " verified signature shares");
+		System.out.println("Recovered " + validatedSignatureTriplets.size() + " verified signature shares");
 
 		if (validatedSignatureTriplets.size() < this.threshold) {
 			throw new BelowThresholdException("Insufficient valid signature shares to recover (below threshold)");
@@ -109,6 +104,7 @@ public class RsaSignatureClient {
 
 		// Combine shares
 		System.out.print("  Recovering signature from shares...");
+		// 到此处
 		BigInteger blindedSignature = ThresholdSignatures.recoverSignature(blindedToBeSigned, validatedSignatureTriplets,
 				mostCommonConfig);
 		System.out.println(" done.");
