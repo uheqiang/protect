@@ -21,18 +21,18 @@ public class PaillierCipher {
 			final BigInteger r) {
 
 		// Get public key parameters
-		//final BigInteger g = encryptionKey.getG();
+		final BigInteger g = encryptionKey.getG();
 		final BigInteger n = encryptionKey.getN();
 		final BigInteger nSquared = encryptionKey.getNSquared();
 
 		// This works for any g
-		//final BigInteger ciphertext = Exponentiation.modPow(g, message, nSquared);
-		
+		final BigInteger ciphertext = Exponentiation.modPow(g, message, nSquared);
+
 		// WARNING: This works only for cases where for g = n + 1
-		final BigInteger ciphertext = n.multiply(message).add(BigInteger.ONE).mod(nSquared);
-		
+		// final BigInteger ciphertext = n.multiply(message).add(BigInteger.ONE).mod(nSquared);
+
 		final BigInteger obfuscation = Exponentiation.modPow(r, n, nSquared);
-		
+
 		return ciphertext.multiply(obfuscation).mod(nSquared);
 	}
 

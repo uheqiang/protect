@@ -32,12 +32,19 @@ public class PublicSharingGenerator {
 		final BigInteger secret = RandomNumberGenerator.generateRandomInteger(curve.getR());
 		return shareSecret(secret, shareholderKeys);
 	}
-	
+
 	public PublicSharing shareSecret(final BigInteger secret, final PaillierPublicKey[] shareholderKeys) {
 		final BigInteger randomness = RandomNumberGenerator.generateRandomInteger(curve.getR());
 		return shareSecretAndRandomness(secret, randomness, shareholderKeys);
 	}
 
+    /**
+     * Pedersen VSS's 密钥分享方案
+     * @param secret
+     * @param randomness
+     * @param shareholderKeys
+     * @return
+     */
 	public PublicSharing shareSecretAndRandomness(final BigInteger secret, final BigInteger randomness, final PaillierPublicKey[] shareholderKeys) {
 		// The secret is held in the first element of the array: polynomial[0]
 		final BigInteger[] polynomial1 = Shamir.generateCoefficients(this.threshold);
