@@ -82,6 +82,13 @@ public class Polynomials {
 		return numerator.multiply(invDenominator).mod(modulo);
 	}
 
+    /**
+     * 密钥恢复
+     * @param shares
+     * @param threshold
+     * @param x
+     * @return
+     */
 	public static BigInteger interpolateComplete(final Collection<ShamirShare> shares, final int threshold,
 			final int x) {
 		if (shares.size() < threshold) {
